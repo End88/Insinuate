@@ -43,27 +43,19 @@ def dist(pont1_x, pont1_y, pont2_x, pont2_y):
 def collision(rect, circle):
     if rect.x <= circle.x <= rect.x + rect.width:
         if circle.y + circle.rad >= rect.y and circle.y - circle.rad <= rect.y + rect.height:
-            if circle.y + circle.rad - rect.y <= 10:
-                return 1
-            else:
-                return 2
+            return True
 
     if circle.y + circle.rad >= rect.y and circle.y - circle.rad <= rect.y + rect.height:
         if circle.x + circle.rad >= rect.x and circle.x - circle.rad <= rect.x + rect.width:
             if circle.x + circle.rad - rect.x <= 10:
-                return 3
-            else:
-                return 4
+                return True
 
-    if dist(circle.x, circle.y, rect.x, rect.y) <= circle.rad:
-        return 5
-    elif dist(circle.x + rect.width, circle.y, rect.x, rect.y) <= circle.rad:
-        return 6
-    elif dist(circle.x, circle.y + rect.height, rect.x, rect.y) <= circle.rad:
-        return 7
-    elif dist(circle.x + rect.width, circle.y + rect.height, rect.x, rect.y) <= circle.rad:
-        return 8
-    return 0
+    if dist(circle.x, circle.y, rect.x, rect.y) <= circle.rad or \
+            dist(circle.x + rect.width, circle.y, rect.x, rect.y) <= circle.rad or \
+            dist(circle.x, circle.y + rect.height, rect.x, rect.y) <= circle.rad or \
+            dist(circle.x + rect.width, circle.y + rect.height, rect.x, rect.y) <= circle.rad:
+        return True
+    return False
 
 
 def ball_collision(ball1, ball2):
@@ -77,7 +69,7 @@ def ball_collision(ball1, ball2):
         return False
 
 
-list_enemies = [[], []]
+list_enemies = [[], [], [], [], []]
 
 
 def create_ball(x, y, group):
@@ -148,13 +140,20 @@ def phase_one():
         wall_14 = Walls(2250 - 25, 0 - 25, 750 + 25, 25, 0)
         list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5, wall_6, wall_7, wall_8, wall_9, wall_10, wall_11,
                       wall_12, wall_13, wall_14]
+
     starter_values()
     clock = pygame.time.Clock()
-    t = 1.0
+    t1 = 1.0
+    t2 = 1.0
     create_ball(600, 0, 0)
-    create_ball(650, 260, 1)
+    for i in range(20):
+        create_ball(0, 0, 1)
+        create_ball(0, 0, 2)
+        create_ball(0, 0, 3)
+        create_ball(0, 0, 4)
     bola_move_x = 0
     bola_move_y = 0
+    ball_velo = 10
     velocity = 5
     move_x = 0
     move_y = 0
@@ -176,20 +175,50 @@ def phase_one():
                 n.draw_obstacle()
         pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)
 
-        t += 3/1
-        for i in list_enemies[1]:
-            i.x += 150 * math.cos(t * 360) * math.cos(t)
-            i.y += 150 * math.cos(t * 360) * math.sin(t)
+        t2 += 0.00002
+        for i in range(len(list_enemies[4])):
+            list_enemies[4][i].x = 220 * math.cos((t2 * (i + 1)) * 360) * math.cos((t2 * (i + 1))) + 2550 + move_x
+            list_enemies[4][i].y = 220 * math.cos((t2 * (i + 1)) * 360) * math.sin((t2 * (i + 1))) + 720 + move_y
+
+        for i in list_enemies[4]:
+            if ball_collision(psg, i):
+                psg.x = width / 2
+                psg.y = height / 2
+                move_x = 0
+                move_y = 0
+                starter_values()
+
+        # ________________________________________________________________________ enemies 2
+        # Movimentação dos inimigos 2 (flor)
+        t1 += 0.001
+        for i in range(len(list_enemies[1])):
+            list_enemies[1][i].x = 250 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 2550 + move_x
+            list_enemies[1][i].y = 250 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) - 250 + move_y
+        for i in range(len(list_enemies[2])):
+            list_enemies[2][i].x = 100 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 2700 + move_x
+            list_enemies[2][i].y = 100 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) - 110 + move_y
+        for i in range(len(list_enemies[3])):
+            list_enemies[3][i].x = 100 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 2700 + move_x
+            list_enemies[3][i].y = 100 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) - 390 + move_y
+        # Verificação de colisão com inimigos 2
+        """
+        for n in range(3):
+            for i in list_enemies[n+1]:
+                if ball_collision(psg, i):
+                    psg.x = width / 2
+                    psg.y = height / 2
+                    move_x = 0
+                    move_y = 0
+                    starter_values()
+        """
+
         # _________________________________________________________________________ enemies 1
-        # Criando inimigos entre 800 e 1600 em um tempo determinado (500)
-        if len(list_enemies[0]) > 0:
-            if pygame.time.get_ticks() - list_enemies[0][-1].second_created >= 500:
-                create_ball(randint(800, 1600) + move_x, 0 + move_y, 0)
+
         # Fazendo o passo deles em 20 e controlando quando eles devem ser removidos
         for i in list_enemies[0]:
-            i.y += 20
-            if i.y > height - move_y:
-                list_enemies[0].remove(i)
+            i.y += ball_velo
+            if i.y > height - move_y or i.y < 0 - move_y:
+                ball_velo = -(ball_velo)
         # Fazendo a colisão dos inimigos e se colidir, reinicia os valores do jogo
         for i in list_enemies[0]:
             if ball_collision(psg, i):
@@ -198,64 +227,37 @@ def phase_one():
                 move_x = 0
                 move_y = 0
                 starter_values()
-
+        # Fazendo a colisão do personagem com a parede
+        for i in list_walls:
+            if collision(i, psg):
+                psg.x = width / 2
+                psg.y = height / 2
+                move_x = 0
+                move_y = 0
+                starter_values()
         # _______________________________________________________ move control
         if left_is_down():
-            if bola_move_x >= -50:
-                bola_move_x -= velocity
-            else:
-                for i in list_walls:
-                    if collision(i, psg) == 4:
-                        move_x -= velocity
-                        for n in list_walls:
-                            n.x -= velocity
-                for i in list_walls:
-                    i.x += velocity
-                move_x += velocity
+            for i in list_walls:
+                i.x += velocity
+            move_x += velocity
 
         if right_is_down():
-            if bola_move_x <= 150:
-                bola_move_x += velocity
-            else:
-                for i in list_walls:
-                    if collision(i, psg) == 3:
-                        move_x += velocity
-                        for n in list_walls:
-                            n.x += velocity
-                for i in list_walls:
-                    i.x -= velocity
-                move_x -= velocity
+            for i in list_walls:
+                i.x -= velocity
+            move_x -= velocity
 
         if up_is_down():
-            if bola_move_y >= -60:
-                bola_move_y -= velocity
-            else:
-                for i in list_walls:
-                    if collision(i, psg) == 2:
-                        move_y -= velocity
-                        for n in list_walls:
-                            n.y -= velocity
-                for i in list_walls:
-                    i.y += velocity
-                move_y += velocity
+            for i in list_walls:
+                i.y += velocity
+            move_y += velocity
 
         if down_is_down():
-            if bola_move_y <= 60:
-                bola_move_y += velocity
-            else:
-                for i in list_walls:
-                    if collision(i, psg) == 1:
-                        move_y += velocity
-                        for n in list_walls:
-                            n.y += velocity
-                for i in list_walls:
-                    i.y -= velocity
-                move_y -= velocity
-        # Soma de movimentação ao personagem
-        psg.x = width / 2 + bola_move_x
-        psg.y = height / 2 + bola_move_y
+            for i in list_walls:
+                i.y -= velocity
+            move_y -= velocity
+
         # ___________________________________________________________
-        clock.tick(60)
+        clock.tick(30)
         pygame.display.update()  # Update de tela
         # Evento de saída
         for event in pygame.event.get():

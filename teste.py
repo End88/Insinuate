@@ -176,11 +176,22 @@ def phase_one():
         for i in list_enemies[1]:
             i.x += 150 * math.cos(t * 360) * math.cos(t)
             i.y += 150 * math.cos(t * 360) * math.sin(t)
-        """
-        t += 3/1
+        
+        t += 3
         for i in list_enemies[1]:
-            i.x += 150 * math.cos(t * 360) * math.cos(t)
-            i.y += 150 * math.cos(t * 360) * math.sin(t)
+            i.x = 150 * math.cos(t * (2 * math.pi + 0.3)) * math.cos(t) + 500
+            i.y = 150 * math.cos(t * (2 * math.pi + 0.3)) * math.sin(t) + 300
+        
+        t += 3
+        for i in list_enemies[1]:
+            i.x = 150 * math.cos(t * (2 * math.pi + 0.5)) * math.cos(t) + 500
+            i.y = 150 * math.cos(t * (2 * math.pi + 0.5)) * math.sin(t) + 300
+        """
+
+        t += 3
+        for i in list_enemies[1]:
+            i.x = 150 * math.cos(t * (2 * math.pi)) * math.cos(t) + 500
+            i.y = 150 * math.cos(t * (2 * math.pi)) * math.sin(t) + 300
         # ___________________________________________________________
         clock.tick(60)
         pygame.display.update()  # Update de tela
