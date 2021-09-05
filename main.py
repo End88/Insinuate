@@ -2,7 +2,7 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
+import datetime
 import pygame
 import math
 
@@ -36,6 +36,16 @@ def down_is_down():
     if keys[pygame.K_DOWN]:
         return True
     return False
+
+
+def txt(message, position_txt_x, position_txt_y, color=(255, 255, 255), size_txt=30, font="david"):
+    font = pygame.font.SysFont(font, size_txt)
+    text = font.render(message, True, color)
+
+    center = []
+    for i in text.get_rect():
+        center.append(i)
+    screen.blit(text, [position_txt_x - center[2] / 2, position_txt_y - center[3] / 2])
 
 
 def dist(pont1_x, pont1_y, pont2_x, pont2_y):
@@ -169,8 +179,8 @@ def phase_one():
     close = False
     while not close:
         # _______________________________________________ Desenhos na tela
-        screen.fill(black) # Limpa tela
-        screen.blit(bg1, (0 + move_x, 0 + move_y)) # Background 1 até 7
+        screen.fill(black)  # Limpa tela
+        screen.blit(bg1, (0 + move_x, 0 + move_y))  # Background 1 até 7
         screen.blit(bg2, (750 + move_x, 0 + move_y))
         screen.blit(bg3, (1500 + move_x, 0 + move_y))
         screen.blit(bg4, (1500 + move_x, -480 + move_y))
@@ -179,10 +189,10 @@ def phase_one():
         screen.blit(bg7, (2250 + move_x, 480 + move_y))
         for i in range(len(list_enemies)):
             for n in list_enemies[i]:
-                n.draw_obstacle() # Desenho de todos os inimigos
+                n.draw_obstacle()  # Desenho de todos os inimigos
         for i in list_walls:
-            i.draw_wall() # Desenho de todas as paredes
-        pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad) # Desenho do personagem
+            i.draw_wall()  # Desenho de todas as paredes
+        pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)  # Desenho do personagem
 
         # ________________________________________________________________________ enemies 2
         # Movimentação de inimigos inferiores
@@ -215,7 +225,7 @@ def phase_one():
         # Verificação de colisão com inimigos 2
 
         for n in range(3):
-            for i in list_enemies[n+1]:
+            for i in list_enemies[n + 1]:
                 if ball_collision(psg, i):
                     psg.x = width / 2
                     psg.y = height / 2
@@ -280,11 +290,68 @@ def phase_one():
                 pygame.display.quit()
 
 
+now = datetime.datetime.now()
+
+
+def restart_now():
+    global now
+    now = datetime.datetime.now()
+
+
+class Esmaecer:
+    def __init__(self):
+        self.cont = 0
+        self.one_time = True
+        self.esm_color_txt = (0, 0, 0)
+
+    def esm_color(self, color, time):
+        dif = datetime.datetime.now() - now
+        if dif.microseconds % 2 == 0 and dif.microseconds != 0:
+            if 0 <= self.cont <= 5:
+                self.esm_color_txt = [int(color[0] / 5 * self.cont), int(color[1] / 5 * self.cont),
+                                 int(color[2] / 5 * self.cont)]
+            if dif.seconds <= time:
+                self.cont += 1
+            else:
+                self.cont -= 1
+        return self.esm_color_txt
+
+
+def continua():
+    restart_now()
+    black = (0, 0, 0)
+    one_time = True
+    cont = 0
+    color_txt = (255, 255, 255)
+    esmaecer_white = Esmaecer()
+    esm_color_txt = (0, 0, 0)
+    clock = pygame.time.Clock()
+    close = False
+    while not close:
+        screen.fill(black)  # Limpa tela
+        txt("Continua...", width / 2, height / 2, esmaecer_white.esm_color(color_txt, 2), 45, "imprintshadow")
+        if down_is_down():
+            esmaecer_white.cont = 0
+            restart_now()
+        """
+        for i in pygame.font.get_fonts():
+            print(i)
+        """
+        clock.tick(30)
+        pygame.display.update()  # Update de tela
+        # Evento de saída
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                close = True
+                pygame.display.quit()
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     pygame.init()
     size = width, height = 750, 480
     screen = pygame.display.set_mode(size)
-    phase_one()
+    # phase_one()
+    continua()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
