@@ -5,37 +5,10 @@
 import datetime
 import pygame
 import math
+from arrow import up_is_down, down_is_down, left_is_down, right_is_down
 
 
 # from random import randint
-
-
-def left_is_down():
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        return True
-    return False
-
-
-def right_is_down():
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_RIGHT]:
-        return True
-    return False
-
-
-def up_is_down():
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_UP]:
-        return True
-    return False
-
-
-def down_is_down():
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_DOWN]:
-        return True
-    return False
 
 
 def txt(message, position_txt_x, position_txt_y, color=(255, 255, 255), size_txt=30, font="david"):
@@ -112,6 +85,33 @@ def starter_values():
                   wall_12, wall_13, wall_14, wall_15, wall_16]
 
 
+now = datetime.datetime.now()
+
+
+def restart_now():
+    global now
+    now = datetime.datetime.now()
+
+
+class Esmaecer:
+    def __init__(self):
+        self.cont = 0
+        self.one_time = True
+        self.esm_color_txt = (0, 0, 0)
+
+    def esm_color(self, color, time):
+        dif = datetime.datetime.now() - now
+        if dif.microseconds % 2 == 0 and dif.microseconds != 0:
+            if 0 <= self.cont <= 5:
+                self.esm_color_txt = [int(color[0] / 5 * self.cont), int(color[1] / 5 * self.cont),
+                                      int(color[2] / 5 * self.cont)]
+            if dif.seconds <= time:
+                self.cont += 1
+            else:
+                self.cont -= 1
+        return self.esm_color_txt
+
+
 class Obstacles:
     def __init__(self, x, y, rad):
         self.x = x
@@ -151,6 +151,7 @@ class Persona:
 
 def phase_one():
     black = (0, 0, 0)
+    white = (255, 255, 255)
     # bola = pygame.image.load('data\\images\\bola.png')
     bg1 = pygame.image.load('data\\images\\bg1.png')
     bg2 = pygame.image.load('data\\images\\bg2.png')
@@ -161,6 +162,17 @@ def phase_one():
     bg7 = pygame.image.load('data\\images\\bg7.png')
     psg = Persona(width / 2, height / 2, 10)
 
+    list_txt = ["Olá", "É bom te ver.", "Fico feliz que esteja aqui", "E que consiga caminhar",
+                "as setas são nossas direções", "Talvez...", "eu possa te ensinar algumas coisas",
+                "Okay. primeiro;", "tome cuidado com as paredes", "Agora vê aquilo?", "não se deixe acertar por elas",
+                "maravilhoso!", "Está pronto para seguir", "Vá em frente", "Há algo esperando por você",
+                "Escolhas...", "Teremos tantas durante a vida.", "Algumas simples, como essa", "Para cima há flores",
+                "para baixo espinhos", "mantenha-se seguro", "suba", "muito bem!", "Não quero pensar",
+                "no que teria no outro lado", "Cuidado!", "Isso foi perigoso!", "Não quero que se machuque", "Okay...",
+                "As escolhas podem ficar difíceis", "Mas sempre...", "Sempre!", "Escolha o que for melhor para você",
+                "Tudo bem?... bem, vamos prosseguir"]
+
+    esmaecer_white = Esmaecer()
     starter_values()  # faz a primeira definição das paredes
     clock = pygame.time.Clock()
     t1 = 1.0
@@ -173,6 +185,7 @@ def phase_one():
         create_ball(0, 0, 2)
         create_ball(0, 0, 3)
         create_ball(0, 0, 4)
+    next_txt = 0
     velocity = 5
     move_x = 0
     move_y = 0
@@ -187,11 +200,13 @@ def phase_one():
         screen.blit(bg5, (2250 + move_x, -480 + move_y))
         screen.blit(bg6, (1500 + move_x, 480 + move_y))
         screen.blit(bg7, (2250 + move_x, 480 + move_y))
+        txt(list_txt[next_txt], width / 2, height / 2 + 100, esmaecer_white.esm_color(white, 2), 45, "imprintshadow")
         for i in range(len(list_enemies)):
             for n in list_enemies[i]:
                 n.draw_obstacle()  # Desenho de todos os inimigos
         for i in list_walls:
             i.draw_wall()  # Desenho de todas as paredes
+
         pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)  # Desenho do personagem
 
         # ________________________________________________________________________ enemies 2
@@ -261,6 +276,9 @@ def phase_one():
                 starter_values()
         # _______________________________________________________ move control
         if left_is_down():
+            next_txt += 1
+            esmaecer_white.cont = 0
+            restart_now()
             for i in list_walls:
                 i.x += velocity
             move_x += velocity
@@ -290,41 +308,12 @@ def phase_one():
                 pygame.display.quit()
 
 
-now = datetime.datetime.now()
-
-
-def restart_now():
-    global now
-    now = datetime.datetime.now()
-
-
-class Esmaecer:
-    def __init__(self):
-        self.cont = 0
-        self.one_time = True
-        self.esm_color_txt = (0, 0, 0)
-
-    def esm_color(self, color, time):
-        dif = datetime.datetime.now() - now
-        if dif.microseconds % 2 == 0 and dif.microseconds != 0:
-            if 0 <= self.cont <= 5:
-                self.esm_color_txt = [int(color[0] / 5 * self.cont), int(color[1] / 5 * self.cont),
-                                 int(color[2] / 5 * self.cont)]
-            if dif.seconds <= time:
-                self.cont += 1
-            else:
-                self.cont -= 1
-        return self.esm_color_txt
-
 
 def continua():
     restart_now()
     black = (0, 0, 0)
-    one_time = True
-    cont = 0
     color_txt = (255, 255, 255)
     esmaecer_white = Esmaecer()
-    esm_color_txt = (0, 0, 0)
     clock = pygame.time.Clock()
     close = False
     while not close:
@@ -351,7 +340,7 @@ if __name__ == '__main__':
     pygame.init()
     size = width, height = 750, 480
     screen = pygame.display.set_mode(size)
-    # phase_one()
-    continua()
+    phase_one()
+    # continua()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
