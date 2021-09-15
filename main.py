@@ -55,34 +55,11 @@ def ball_collision(ball1, ball2):
 
 
 list_enemies = [[], [], [], [], []]
-list_walls = []
 
 
 def create_ball(x, y, group):
     enemies = Obstacles(x, y, 5)
     list_enemies[group].append(enemies)  # noinspection PyTypeChecker
-
-
-def starter_values():
-    global list_walls
-    wall_1 = Walls(0, 0, 750, 25, 0)
-    wall_2 = Walls(0, 480 - 25, 750, 25, 0)
-    wall_3 = Walls(0, 0, 25, 480, 0)
-    wall_4 = Walls(750, 0, 750, 25, 0)
-    wall_5 = Walls(750, 480 - 25, 750, 25, 0)
-    wall_6 = Walls(1500, -480, 25, 480 + 25, 0)
-    wall_7 = Walls(1500, 480 - 25, 25, 480, 0)
-    wall_8 = Walls(2250 - 25, 0, 25, 480, 0)
-    wall_9 = Walls(1500, -480, 750, 25, 0)
-    wall_10 = Walls(2250, -480, 750, 25, 0)
-    wall_11 = Walls(1500, 960 - 25, 750, 25, 0)
-    wall_12 = Walls(2250, 960 - 25, 750, 25, 0)
-    wall_13 = Walls(2250 - 25, 480, 750 + 25, 25, 0)
-    wall_14 = Walls(2250 - 25, 0 - 25, 750 + 25, 25, 0)
-    wall_15 = Walls(500, 0, 200, height / 2 - 20, 0)
-    wall_16 = Walls(500, height / 2 + 20, 200, height / 2 - 20, 0)
-    list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5, wall_6, wall_7, wall_8, wall_9, wall_10, wall_11,
-                  wall_12, wall_13, wall_14, wall_15, wall_16]
 
 
 now = datetime.datetime.now()
@@ -130,13 +107,13 @@ class Obstacles:
 
 
 class Walls:
-    def __init__(self, x, y, swidth, sheight, angle=0):
+    def __init__(self, x, y, swidth, sheight, angle=0, color=(102, 102, 102)):
         self.x = x
         self.y = y
         self.width = swidth
         self.height = sheight
         self.angle = angle
-        self.color = (102, 102, 102)
+        self.color = color
 
     def draw_wall(self):
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
@@ -149,42 +126,52 @@ class Persona:
         self.rad = rad
 
 
-def phase_one():
+def phase_one_part_one():
     black = (0, 0, 0)
     white = (255, 255, 255)
-    # bola = pygame.image.load('data\\images\\bola.png')
     bg1 = pygame.image.load('data\\images\\bg1.png')
     bg2 = pygame.image.load('data\\images\\bg2.png')
     bg3 = pygame.image.load('data\\images\\bg3.png')
-    bg4 = pygame.image.load('data\\images\\bg4.png')
-    bg5 = pygame.image.load('data\\images\\bg5.png')
-    bg6 = pygame.image.load('data\\images\\bg6.png')
-    bg7 = pygame.image.load('data\\images\\bg7.png')
+
     psg = Persona(width / 2, height / 2, 10)
+    wall_1 = Walls(0, 0, 750, 25, 0)
+    wall_2 = Walls(0, 480 - 25, 750, 25, 0)
+    wall_3 = Walls(0, 0, 25, 480, 0)
+    wall_4 = Walls(750, 0, 750, 25, 0)
+    wall_5 = Walls(750, 480 - 25, 750, 25, 0)
+    wall_6 = Walls(1500, -480, 25, 480 + 25, 0)
+    wall_7 = Walls(1500, 480 - 25, 25, 480, 0)
+    wall_8 = Walls(2250 - 25, 0, 25, 480, 0)
+    wall_15 = Walls(500, 0, 200, height / 2 - 20, 0)
+    wall_16 = Walls(500, height / 2 + 20, 200, height / 2 - 20, 0)
+    list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5, wall_6, wall_7, wall_8, wall_15, wall_16]
+
+    way_one = Walls(1500, 0, 750, 25, 0, (102, 102, 162))
+    way_two = Walls(1500, 480-25, 750, 25, 0, (162, 102, 102))
+    list_end_phase = [way_one, way_two]
+
+    copy_walls = []
+    for i in list_walls:
+        copy_wall = Walls(i.x, i.y, i.width, i.height, i.angle)
+        copy_walls.append(copy_wall)
+
+    copy_ways = []
+    for i in list_end_phase:
+        copy_way = Walls(i.x, i.y, i.width, i.height, i.angle)
+        copy_ways.append(copy_way)
 
     list_txt = ["Olá", "É bom te ver.", "Fico feliz que esteja aqui", "E que consiga caminhar",
                 "as setas são nossas direções", "Talvez...", "eu possa te ensinar algumas coisas",
                 "Okay. primeiro;", "tome cuidado com as paredes", "Agora vê aquilo?", "não se deixe acertar por elas",
                 "maravilhoso!", "Está pronto para seguir", "Vá em frente", "Há algo esperando por você",
                 "Escolhas...", "Teremos tantas durante a vida.", "Algumas simples, como essa", "Para cima há flores",
-                "para baixo espinhos", "mantenha-se seguro", "suba", "muito bem!", "Não quero pensar",
-                "no que teria no outro lado", "Cuidado!", "Isso foi perigoso!", "Não quero que se machuque", "Okay...",
-                "As escolhas podem ficar difíceis", "Mas sempre...", "Sempre!", "Escolha o que for melhor para você",
-                "Tudo bem?... bem, vamos prosseguir"]
+                "para baixo espinhos", "mantenha-se seguro", "suba"]
 
     esmaecer_white = Esmaecer()
-    starter_values()  # faz a primeira definição das paredes
     clock = pygame.time.Clock()
-    t1 = 1.0
-    t2 = 1.0
     for i in range(5):
         create_ball(900, i * 50, 0)
 
-    for i in range(20):
-        create_ball(0, 0, 1)
-        create_ball(0, 0, 2)
-        create_ball(0, 0, 3)
-        create_ball(0, 0, 4)
     next_txt = 0
     velocity = 5
     move_x = 0
@@ -196,57 +183,15 @@ def phase_one():
         screen.blit(bg1, (0 + move_x, 0 + move_y))  # Background 1 até 7
         screen.blit(bg2, (750 + move_x, 0 + move_y))
         screen.blit(bg3, (1500 + move_x, 0 + move_y))
-        screen.blit(bg4, (1500 + move_x, -480 + move_y))
-        screen.blit(bg5, (2250 + move_x, -480 + move_y))
-        screen.blit(bg6, (1500 + move_x, 480 + move_y))
-        screen.blit(bg7, (2250 + move_x, 480 + move_y))
         txt(list_txt[next_txt], width / 2, height / 2 + 100, esmaecer_white.esm_color(white, 2), 45, "imprintshadow")
-        for i in range(len(list_enemies)):
-            for n in list_enemies[i]:
-                n.draw_obstacle()  # Desenho de todos os inimigos
+        way_one.draw_wall()
+        way_two.draw_wall()
+        for n in list_enemies[0]:
+            n.draw_obstacle()  # Desenho de todos os inimigos
         for i in list_walls:
             i.draw_wall()  # Desenho de todas as paredes
 
         pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)  # Desenho do personagem
-
-        # ________________________________________________________________________ enemies 2
-        # Movimentação de inimigos inferiores
-        t2 += 0.00002
-        for i in range(len(list_enemies[4])):
-            list_enemies[4][i].x = 220 * math.cos((t2 * (i + 1)) * 360) * math.cos((t2 * (i + 1))) + 2550 + move_x
-            list_enemies[4][i].y = 220 * math.cos((t2 * (i + 1)) * 360) * math.sin((t2 * (i + 1))) + 720 + move_y
-
-        # Colisão de inimigos inferiores
-        for i in list_enemies[4]:
-            if ball_collision(psg, i):
-                psg.x = width / 2
-                psg.y = height / 2
-                move_x = 0
-                move_y = 0
-                starter_values()
-
-        # ________________________________________________________________________ enemies 2
-        # Movimentação dos inimigos 2 (flores)
-        t1 += 0.001
-        for i in range(len(list_enemies[1])):
-            list_enemies[1][i].x = 250 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 2550 + move_x
-            list_enemies[1][i].y = 250 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) - 250 + move_y
-        for i in range(len(list_enemies[2])):
-            list_enemies[2][i].x = 100 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 2700 + move_x
-            list_enemies[2][i].y = 100 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) - 110 + move_y
-        for i in range(len(list_enemies[3])):
-            list_enemies[3][i].x = 100 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 2700 + move_x
-            list_enemies[3][i].y = 100 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) - 390 + move_y
-        # Verificação de colisão com inimigos 2
-
-        for n in range(3):
-            for i in list_enemies[n + 1]:
-                if ball_collision(psg, i):
-                    psg.x = width / 2
-                    psg.y = height / 2
-                    move_x = 0
-                    move_y = 0
-                    starter_values()
 
         # _________________________________________________________________________ enemies 1
 
@@ -264,7 +209,12 @@ def phase_one():
                 psg.y = height / 2
                 move_x = 0
                 move_y = 0
-                starter_values()
+                for extand in range(len(list_walls)):
+                    list_walls[extand].x = copy_walls[extand].x
+                    list_walls[extand].y = copy_walls[extand].y
+                for extand in range(len(list_end_phase)):
+                    list_end_phase[extand].x = copy_ways[extand].x
+                    list_end_phase[extand].y = copy_ways[extand].y
         # ________________________________________________________________________
         # Fazendo a colisão do personagem com a parede
         for i in list_walls:
@@ -273,28 +223,45 @@ def phase_one():
                 psg.y = height / 2
                 move_x = 0
                 move_y = 0
-                starter_values()
+                for extand in range(len(list_walls)):
+                    list_walls[extand].x = copy_walls[extand].x
+                    list_walls[extand].y = copy_walls[extand].y
+                for extand in range(len(list_end_phase)):
+                    list_end_phase[extand].x = copy_ways[extand].x
+                    list_end_phase[extand].y = copy_ways[extand].y
+        if collision(way_one, psg):
+            phase_one_part_two()
+        if collision(way_two, psg):
+            phase_one_part_three()
         # _______________________________________________________ move control
         if left_is_down():
-            next_txt += 1
-            esmaecer_white.cont = 0
-            restart_now()
+            # next_txt += 1
+            # esmaecer_white.cont = 0
+            # restart_now()
             for i in list_walls:
+                i.x += velocity
+            for i in list_end_phase:
                 i.x += velocity
             move_x += velocity
 
         if right_is_down():
             for i in list_walls:
                 i.x -= velocity
+            for i in list_end_phase:
+                i.x -= velocity
             move_x -= velocity
 
         if up_is_down():
             for i in list_walls:
                 i.y += velocity
+            for i in list_end_phase:
+                i.y += velocity
             move_y += velocity
 
         if down_is_down():
             for i in list_walls:
+                i.y -= velocity
+            for i in list_end_phase:
                 i.y -= velocity
             move_y -= velocity
 
@@ -307,6 +274,230 @@ def phase_one():
                 close = True
                 pygame.display.quit()
 
+
+# 17,64 + 10,24 + 1,44 + 0,04 + 7,84 + 23,04
+
+
+def phase_one_part_two():
+    black = (0, 0, 0)
+    bg4 = pygame.image.load('data\\images\\bg4.png')
+    bg5 = pygame.image.load('data\\images\\bg5.png')
+    psg = Persona(width / 2, height / 2, 10)
+
+    wall_1 = Walls(0, 0, 750, 25, 0)
+    wall_2 = Walls(0, 480 - 25, 750, 25, 0)
+    wall_3 = Walls(0, 0, 25, 480, 0)
+    wall_4 = Walls(750, 0, 750, 25, 0)
+    wall_5 = Walls(750, 480 - 25, 750, 25, 0)
+    list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5]
+
+    end_game = Walls(1500, 0, 25, 480, 0, (102, 162, 102))
+    copy_walls = []
+    for i in list_walls:
+        copy_wall = Walls(i.x, i.y, i.width, i.height, i.angle)
+        copy_walls.append(copy_wall)
+
+    for i in range(20):
+        create_ball(0, 0, 1)
+        create_ball(0, 0, 2)
+        create_ball(0, 0, 3)
+
+    t1 = 1.0
+    velocity = 5
+    move_x = 0
+    move_y = 0
+    clock = pygame.time.Clock()
+    close = False
+    while not close:
+        screen.fill(black)  # Limpa tela
+
+        screen.blit(bg4, (0 + move_x, 0 + move_y))  # Background 1 até 7
+        screen.blit(bg5, (750 + move_x, 0 + move_y))
+        for i in range(len(list_enemies)):
+            for n in list_enemies[i]:
+                n.draw_obstacle()  # Desenho de todos os inimigos
+        for i in list_walls:
+            i.draw_wall()  # Desenho de todas as paredes
+        end_game.draw_wall()
+        pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)  # Desenho do personagem
+
+        t1 += 0.001
+        for i in range(len(list_enemies[1])):
+            list_enemies[1][i].x = 250 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 750 + move_x
+            list_enemies[1][i].y = 250 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) + 250 + move_y
+        for i in range(len(list_enemies[2])):
+            list_enemies[2][i].x = 100 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 850 + move_x
+            list_enemies[2][i].y = 100 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) + 370 + move_y
+        for i in range(len(list_enemies[3])):
+            list_enemies[3][i].x = 100 * math.cos((t1 * (i + 1)) * 3) * math.cos((t1 * (i + 1))) + 850 + move_x
+            list_enemies[3][i].y = 100 * math.cos((t1 * (i + 1)) * 3) * math.sin((t1 * (i + 1))) + 130 + move_y
+        # Verificação de colisão com inimigos 2
+
+        for n in range(3):
+            for i in list_enemies[n + 1]:
+                if ball_collision(psg, i):
+                    psg.x = width / 2
+                    psg.y = height / 2
+                    move_x = 0
+                    move_y = 0
+                    for extand in range(len(list_walls)):
+                        list_walls[extand].x = copy_walls[extand].x
+                        list_walls[extand].y = copy_walls[extand].y
+                    end_game = Walls(1500, 0, 25, 480, 0, (102, 162, 102))
+        # ________________________________________________________________________
+        # Fazendo a colisão do personagem com a parede
+        for i in list_walls:
+            if collision(i, psg):
+                psg.x = width / 2
+                psg.y = height / 2
+                move_x = 0
+                move_y = 0
+                for n in range(len(list_walls)):
+                    list_walls[n].x = copy_walls[n].x
+                    list_walls[n].y = copy_walls[n].y
+                end_game = Walls(1500, 0, 25, 480, 0, (102, 162, 102))
+        if collision(end_game, psg):
+            continua()
+        # _______________________________________________________ move control
+        if left_is_down():
+            for i in list_walls:
+                i.x += velocity
+            end_game.x += velocity
+            move_x += velocity
+
+        if right_is_down():
+            for i in list_walls:
+                i.x -= velocity
+            end_game.x -= velocity
+            move_x -= velocity
+
+        if up_is_down():
+            for i in list_walls:
+                i.y += velocity
+            end_game.y += velocity
+            move_y += velocity
+
+        if down_is_down():
+            for i in list_walls:
+                i.y -= velocity
+            end_game.y -= velocity
+            move_y -= velocity
+
+        clock.tick(30)
+        pygame.display.update()  # Update de tela
+        # Evento de saída
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                close = True
+                pygame.display.quit()
+
+
+def phase_one_part_three():
+    black = (0, 0, 0)
+    bg4 = pygame.image.load('data\\images\\bg4.png')
+    bg5 = pygame.image.load('data\\images\\bg5.png')
+    psg = Persona(width / 2, height / 2, 10)
+
+    wall_1 = Walls(0, 0, 750, 25, 0)
+    wall_2 = Walls(0, 480 - 25, 750, 25, 0)
+    wall_3 = Walls(0, 0, 25, 480, 0)
+    wall_4 = Walls(750, 0, 750, 25, 0)
+    wall_5 = Walls(750, 480 - 25, 750, 25, 0)
+    list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5]
+
+    end_game = Walls(1500, 0, 25, 480, 0, (102, 162, 102))
+
+    copy_walls = []
+    for i in list_walls:
+        copy_wall = Walls(i.x, i.y, i.width, i.height, i.angle)
+        copy_walls.append(copy_wall)
+
+    for i in range(20):
+        create_ball(0, 0, 4)
+
+    t2 = 1.0
+    velocity = 5
+    move_x = 0
+    move_y = 0
+    clock = pygame.time.Clock()
+    close = False
+    while not close:
+        screen.fill(black)  # Limpa tela
+
+        screen.blit(bg4, (0 + move_x, 0 + move_y))  # Background 1 até 7
+        screen.blit(bg5, (750 + move_x, 0 + move_y))
+        for i in range(len(list_enemies)):
+            for n in list_enemies[i]:
+                n.draw_obstacle()  # Desenho de todos os inimigos
+        for i in list_walls:
+            i.draw_wall()  # Desenho de todas as paredes
+        end_game.draw_wall()
+        pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)  # Desenho do personagem
+
+        t2 += 0.00002
+        for i in range(len(list_enemies[4])):
+            list_enemies[4][i].x = 220 * math.cos((t2 * (i + 1)) * 360) * math.cos((t2 * (i + 1))) + 750 + move_x
+            list_enemies[4][i].y = 220 * math.cos((t2 * (i + 1)) * 360) * math.sin((t2 * (i + 1))) + 250 + move_y
+
+        # Colisão de inimigos inferiores
+        for i in list_enemies[4]:
+            if ball_collision(psg, i):
+                psg.x = width / 2
+                psg.y = height / 2
+                move_x = 0
+                move_y = 0
+                for extand in range(len(list_walls)):
+                    list_walls[extand].x = copy_walls[extand].x
+                    list_walls[extand].y = copy_walls[extand].y
+                end_game = Walls(1500, 0, 25, 480, 0, (102, 162, 102))
+
+        if collision(end_game, psg):
+            continua()
+        # ________________________________________________________________________
+        # Fazendo a colisão do personagem com a parede
+        for i in list_walls:
+            if collision(i, psg):
+                psg.x = width / 2
+                psg.y = height / 2
+                move_x = 0
+                move_y = 0
+                for n in range(len(list_walls)):
+                    list_walls[n].x = copy_walls[n].x
+                    list_walls[n].y = copy_walls[n].y
+                end_game = Walls(1500, 0, 25, 480, 0, (102, 162, 102))
+
+        # _______________________________________________________ move control
+        if left_is_down():
+            for i in list_walls:
+                i.x += velocity
+            end_game.x += velocity
+            move_x += velocity
+
+        if right_is_down():
+            for i in list_walls:
+                i.x -= velocity
+            end_game.x -= velocity
+            move_x -= velocity
+
+        if up_is_down():
+            for i in list_walls:
+                i.y += velocity
+            end_game.y += velocity
+            move_y += velocity
+
+        if down_is_down():
+            for i in list_walls:
+                i.y -= velocity
+            end_game.y -= velocity
+            move_y -= velocity
+
+        clock.tick(30)
+        pygame.display.update()  # Update de tela
+        # Evento de saída
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                close = True
+                pygame.display.quit()
 
 
 def continua():
@@ -335,12 +526,27 @@ def continua():
                 pygame.display.quit()
 
 
+"""
+def ger_phase():  # Gerenciador de fase
+    part = 0
+    phases_list = [[phase_one_part_one(), phase_one_part_two(), phase_one_part_three()], [continua()]]
+    close = 1
+    while close != 0:
+        phases_list[Gphase][part]
+        part = phases_list[Gphase][part]
+        if part >= 10:
+            close = 0
+"""
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     pygame.init()
     size = width, height = 750, 480
     screen = pygame.display.set_mode(size)
-    phase_one()
+    # ger_phase()
+    phase_one_part_one()
+    # phase_one_part_two()
+    # phase_one_part_three()
     # continua()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
