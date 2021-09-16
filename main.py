@@ -8,6 +8,11 @@ import math
 from arrow import up_is_down, down_is_down, left_is_down, right_is_down
 
 
+def enter_is_down():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_RETURN]:
+        return True
+    return False
 # from random import randint
 
 
@@ -18,7 +23,7 @@ def txt(message, position_txt_x, position_txt_y, color=(255, 255, 255), size_txt
     center = []
     for i in text.get_rect():
         center.append(i)
-    screen.blit(text, [position_txt_x - center[2] / 2, position_txt_y - center[3] / 2])
+    s.blit(text, [position_txt_x - center[2] / 2, position_txt_y - center[3] / 2])
 
 
 def dist(pont1_x, pont1_y, pont2_x, pont2_y):
@@ -68,25 +73,6 @@ now = datetime.datetime.now()
 def restart_now():
     global now
     now = datetime.datetime.now()
-
-
-class Esmaecer:
-    def __init__(self):
-        self.cont = 0
-        self.one_time = True
-        self.esm_color_txt = (0, 0, 0)
-
-    def esm_color(self, color, time):
-        dif = datetime.datetime.now() - now
-        if dif.microseconds % 2 == 0 and dif.microseconds != 0:
-            if 0 <= self.cont <= 5:
-                self.esm_color_txt = [int(color[0] / 5 * self.cont), int(color[1] / 5 * self.cont),
-                                      int(color[2] / 5 * self.cont)]
-            if dif.seconds <= time:
-                self.cont += 1
-            else:
-                self.cont -= 1
-        return self.esm_color_txt
 
 
 class Obstacles:
@@ -160,18 +146,19 @@ def phase_one_part_one():
         copy_way = Walls(i.x, i.y, i.width, i.height, i.angle)
         copy_ways.append(copy_way)
 
-    list_txt = ["Olá", "É bom te ver.", "Fico feliz que esteja aqui", "E que consiga caminhar",
-                "as setas são nossas direções", "Talvez...", "eu possa te ensinar algumas coisas",
-                "Okay. primeiro;", "tome cuidado com as paredes", "Agora vê aquilo?", "não se deixe acertar por elas",
-                "maravilhoso!", "Está pronto para seguir", "Vá em frente", "Há algo esperando por você",
-                "Escolhas...", "Teremos tantas durante a vida.", "Algumas simples, como essa", "Para cima há flores",
-                "para baixo espinhos", "mantenha-se seguro", "suba"]
+    list_txt = [["Olá", 50], ["É bom te ver.", 30], ["Fico feliz que esteja aqui", 50], ["Talvez...", 90],
+                ["eu possa te ensinar algumas coisas", 20], ["Okay. primeiro;", 50],
+                ["as setas são nossas direções", 25], ["Segundo", 90], ["tome cuidado com as paredes", 25],
+                ["Agora vê aquilo?", 60], ["não se deixe acertar por elas", 30], ["maravilhoso!", 90],
+                ["Está pronto para seguir", 50], ["Vá em frente", 60], ["Há algo esperando por você", 75],
+                ["Escolhas...", 25], ["Teremos tantas durante a vida.", 75], ["Algumas simples, como esta", 50],
+                ["Para cima há flores", 30], ["para baixo, espinhos", 30], ["mantenha-se seguro", 75], ["suba", 90]]
 
-    esmaecer_white = Esmaecer()
     clock = pygame.time.Clock()
     for i in range(5):
         create_ball(900, i * 50, 0)
 
+    fade = 0
     next_txt = 0
     velocity = 5
     move_x = 0
@@ -180,19 +167,34 @@ def phase_one_part_one():
     while not close:
         # _______________________________________________ Desenhos na tela
         screen.fill(black)  # Limpa tela
+        s.fill((0, 0, 0, 0))
+        s.set_alpha(fade)
         screen.blit(bg1, (0 + move_x, 0 + move_y))  # Background 1 até 7
         screen.blit(bg2, (750 + move_x, 0 + move_y))
         screen.blit(bg3, (1500 + move_x, 0 + move_y))
-        txt(list_txt[next_txt], width / 2, height / 2 + 100, esmaecer_white.esm_color(white, 2), 45, "imprintshadow")
         way_one.draw_wall()
         way_two.draw_wall()
         for n in list_enemies[0]:
             n.draw_obstacle()  # Desenho de todos os inimigos
         for i in list_walls:
             i.draw_wall()  # Desenho de todas as paredes
-
+        txt(list_txt[next_txt][0], width / 2, height / 2 + 100, white, 45, "imprintshadow")
+        screen.blit(s, (0, 0))
         pygame.draw.circle(screen, (255, 255, 255), (psg.x, psg.y), psg.rad)  # Desenho do personagem
 
+        # _________________________________________________________________________ txt appear and desappear
+        fade_velocity = list_txt[next_txt][1]
+        if 255 >= fade >= 0:
+            fade += fade_velocity
+
+        if enter_is_down():
+            if fade > 255:
+                fade = 255
+                list_txt[next_txt][1] = -list_txt[next_txt][1]
+            if fade < 0:
+                fade = 0
+                if next_txt < len(list_txt)-1:
+                    next_txt += 1
         # _________________________________________________________________________ enemies 1
 
         # movimentação dos primeiros inimigos
@@ -252,18 +254,10 @@ def phase_one_part_one():
             move_x -= velocity
 
         if up_is_down():
-            for i in list_walls:
-                i.y += velocity
-            for i in list_end_phase:
-                i.y += velocity
-            move_y += velocity
+            psg.y -= velocity
 
         if down_is_down():
-            for i in list_walls:
-                i.y -= velocity
-            for i in list_end_phase:
-                i.y -= velocity
-            move_y -= velocity
+            psg.y += velocity
 
         # ___________________________________________________________
         clock.tick(30)
@@ -372,16 +366,10 @@ def phase_one_part_two():
             move_x -= velocity
 
         if up_is_down():
-            for i in list_walls:
-                i.y += velocity
-            end_game.y += velocity
-            move_y += velocity
+            psg.y -= velocity
 
         if down_is_down():
-            for i in list_walls:
-                i.y -= velocity
-            end_game.y -= velocity
-            move_y -= velocity
+            psg.y += velocity
 
         clock.tick(30)
         pygame.display.update()  # Update de tela
@@ -480,16 +468,10 @@ def phase_one_part_three():
             move_x -= velocity
 
         if up_is_down():
-            for i in list_walls:
-                i.y += velocity
-            end_game.y += velocity
-            move_y += velocity
+            psg.y -= velocity
 
         if down_is_down():
-            for i in list_walls:
-                i.y -= velocity
-            end_game.y -= velocity
-            move_y -= velocity
+            psg.y += velocity
 
         clock.tick(30)
         pygame.display.update()  # Update de tela
@@ -504,19 +486,29 @@ def continua():
     restart_now()
     black = (0, 0, 0)
     color_txt = (255, 255, 255)
-    esmaecer_white = Esmaecer()
     clock = pygame.time.Clock()
+    fade = 0
+    fade_velocity = 5
     close = False
     while not close:
         screen.fill(black)  # Limpa tela
-        txt("Continua...", width / 2, height / 2, esmaecer_white.esm_color(color_txt, 2), 45, "imprintshadow")
-        if down_is_down():
-            esmaecer_white.cont = 0
-            restart_now()
+        s.fill((0, 0, 0, 0))
+        s.set_alpha(fade)
+        txt("Continua...", width / 2, height / 2, color_txt, 45, "imprintshadow")
+        screen.blit(s, (0, 0))
         """
         for i in pygame.font.get_fonts():
             print(i)
         """
+        if 255 >= fade >= 0:
+            fade += fade_velocity
+
+        if enter_is_down():
+            if fade > 255:
+                fade = 255
+            if fade < 0:
+                fade = 0
+            fade_velocity = fade_velocity
         clock.tick(30)
         pygame.display.update()  # Update de tela
         # Evento de saída
@@ -543,6 +535,8 @@ if __name__ == '__main__':
     pygame.init()
     size = width, height = 750, 480
     screen = pygame.display.set_mode(size)
+    s = pygame.Surface((width, height), pygame.SRCALPHA)
+    s.set_alpha(255)
     # ger_phase()
     phase_one_part_one()
     # phase_one_part_two()
