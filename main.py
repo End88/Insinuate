@@ -6,13 +6,6 @@ import datetime
 import pygame
 import math
 from arrow import up_is_down, down_is_down, left_is_down, right_is_down
-
-
-def enter_is_down():
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_RETURN]:
-        return True
-    return False
 # from random import randint
 
 
@@ -33,17 +26,19 @@ def dist(pont1_x, pont1_y, pont2_x, pont2_y):
 def collision(rect, circle):
     if rect.x <= circle.x <= rect.x + rect.width:
         if circle.y + circle.rad >= rect.y and circle.y - circle.rad <= rect.y + rect.height:
+            print("caiu 1")
             return True
 
     if circle.y + circle.rad >= rect.y and circle.y - circle.rad <= rect.y + rect.height:
         if circle.x + circle.rad >= rect.x and circle.x - circle.rad <= rect.x + rect.width:
-            if circle.x + circle.rad - rect.x <= 10:
-                return True
+            print("caiu 2")
+            return True
 
     if dist(circle.x, circle.y, rect.x, rect.y) <= circle.rad or \
             dist(circle.x + rect.width, circle.y, rect.x, rect.y) <= circle.rad or \
             dist(circle.x, circle.y + rect.height, rect.x, rect.y) <= circle.rad or \
             dist(circle.x + rect.width, circle.y + rect.height, rect.x, rect.y) <= circle.rad:
+        print("caiu 3")
         return True
     return False
 
@@ -120,18 +115,19 @@ def phase_one_part_one():
     bg3 = pygame.image.load('data\\images\\bg3.png')
 
     psg = Persona(width / 2, height / 2, 10)
-    wall_1 = Walls(0, 0, 750, 25, 0)
-    wall_2 = Walls(0, 480 - 25, 750, 25, 0)
-    wall_3 = Walls(0, 0, 25, 480, 0)
-    wall_4 = Walls(750, 0, 750+275, 25, 0)
-    wall_5 = Walls(750, 480 - 25, 750 + 275, 25, 0)
-    wall_6 = Walls(1500, -480, 25, 480 + 25, 0)
-    wall_7 = Walls(1500, 480 - 25, 25, 480, 0)
-    wall_8 = Walls(2250 - 25, 0, 25, 480, 0)
-    wall_15 = Walls(500, 0, 200, height / 2 - 20, 0)
-    wall_16 = Walls(500, height / 2 + 20, 200, height / 2 - 20, 0)
-    wall_17 = Walls(500, height / 2 - 20, 10, 40, 0)
-    list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5, wall_6, wall_7, wall_8, wall_15, wall_16, wall_17]
+
+    wall_1 = Walls(0, 0, 750, 25)
+    wall_2 = Walls(0, 480 - 25, 750, 25)
+    wall_3 = Walls(0, 0, 25, 480)
+    wall_4 = Walls(750, 0, 750+275, 25)
+    wall_5 = Walls(750, 480 - 25, 750 + 275, 25)
+    wall_6 = Walls(1500, -480, 25, 480 + 25)
+    wall_7 = Walls(1500, 480 - 25, 25, 480)
+    wall_8 = Walls(2250 - 25, 0, 25, 480)
+    wall_9 = Walls(500, 0, 200, (height / 2 - 20))
+    wall_10 = Walls(500, (height / 2 + 20), 200, (height / 2))
+    wall_17 = Walls(500, height / 2 - 20, 10, 40)
+    list_walls = [wall_1, wall_2, wall_3, wall_4, wall_5, wall_6, wall_7, wall_8, wall_9, wall_10, wall_17]
 
     way_one = Walls(1775, 0, 750-275, 25, 0, (102, 102, 162))
     way_two = Walls(1775, 480-25, 750-275, 25, 0, (162, 102, 102))
@@ -236,12 +232,15 @@ def phase_one_part_one():
                 psg.y = height / 2
                 move_x = 0
                 move_y = 0
+                print(i.x)
                 for extand in range(len(list_walls)):
                     list_walls[extand].x = copy_walls[extand].x
                     list_walls[extand].y = copy_walls[extand].y
                 for extand in range(len(list_end_phase)):
                     list_end_phase[extand].x = copy_ways[extand].x
                     list_end_phase[extand].y = copy_ways[extand].y
+
+        # ________________________________________________________ Colisão com paredes de encerramento do jogo
         if collision(way_one, psg):
             phase_one_part_two()
         if collision(way_two, psg):
@@ -255,9 +254,6 @@ def phase_one_part_one():
                 list_walls.remove(wall_17)  # Se colidir, retira a parede 17 da lista.
         # _______________________________________________________ move control
         if left_is_down():
-            # next_txt += 1
-            # esmaecer_white.cont = 0
-            # restart_now()
             for i in list_walls:
                 i.x += velocity
             for i in list_end_phase:
@@ -576,11 +572,6 @@ def continua():
         if 255 >= fade >= 0:
             fade += fade_velocity
 
-        if enter_is_down():
-            if fade > 255:
-                fade = 255
-            if fade < 0:
-                fade = 0
             fade_velocity = fade_velocity
         clock.tick(30)
         pygame.display.update()  # Update de tela
