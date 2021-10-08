@@ -5,7 +5,11 @@
 import datetime
 import pygame
 import math
+import numpy
+import wave
 from arrow import up_is_down, down_is_down, left_is_down, right_is_down
+from spectrum import Spectrum
+from scipy.fftpack import dct
 # from random import randint
 
 
